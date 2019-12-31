@@ -2,6 +2,7 @@ package com.jwtsecurity.demo.config;
 
 import com.jwtsecurity.demo.service.JwtUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +16,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
+
+import static java.util.Objects.*;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -30,7 +34,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain chain)
 
             throws ServletException, IOException {
 
@@ -41,7 +45,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String jwtToken = null;
 
 
-        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+        if (!isNull(requestTokenHeader) && requestTokenHeader.startsWith("Bearer ")) {
 
             jwtToken = requestTokenHeader.substring(7);
 
@@ -66,7 +70,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (!isNull(username) && isNull(SecurityContextHolder.getContext().getAuthentication())) {
 
             UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
 
